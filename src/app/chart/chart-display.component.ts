@@ -1,14 +1,18 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component } from "@angular/core";
-import Chart from 'chart.js/auto';
-import { addCustomBackground } from "./chart-constants";
+import Chart, { ChartOptions } from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
+Chart.register(annotationPlugin);
+import { addCustomBackground, annotations } from "./chart-constants";
 
 @Component({
   selector: 'chart-display-component',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './chart-display.component.scss',
   template: `
-      <div class="chart-container" style="position: relative; height:65vh; width:85vw">
-        <canvas id="myChart"></canvas>
+      <div class="chart-container">
+        <canvas id="flightChart"></canvas>
       </div>
   `
 })
@@ -18,42 +22,43 @@ export class ChartDisplayComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.chart = new Chart('myChart', {
-      type: "line",
+    this.chart = new Chart('flightChart', {
+      type: 'scatter',
       plugins: this.plugins,
-      data: {
-        labels: [1, 2, 3, 4, 5, 6, 7],
-        datasets: [{
-          label: 'My First dataset',
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          borderColor: 'rgb(54, 162, 235)',
-          borderWidth: 1,
-          data: [10, 20, 30, 40, 50, 0, 5],
-        }]
-      },
-      options: {
-        aspectRatio: 3,
-        scales: {
-          x: {
-            grid: {
-              lineWidth: 0.5,
-              color: '#42a166',
-              tickColor: 'grey'
-            }
-          },
-          y: {
-            grid: {
-              lineWidth: 0.5,
-              color: '#42a166',
-              tickColor: 'grey',
+      data: { datasets: [] },
+      options: this.setupChartOptions(),
+    })
+  }
 
-            }
-          }
 
+  private setupChartOptions() {
+    return <ChartOptions>{
+      responsive: true,
+      maintainAspectRatio: false,
+      aspectRatio: 1,
+      scales: {
+        x: {
+          min: 0,
+          max: 700,
+        },
+        y: {
+          min: 0,
+          max: 700,
         }
       },
-    });
-
+      plugins: {
+        legend: {
+          display: false
+        },
+        annotation: {
+          annotations: {
+            ...annotations
+          }
+        }
+      }
+    }
   }
 }
+
+
 
