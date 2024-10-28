@@ -3,7 +3,7 @@ import Chart, { ChartOptions } from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
 Chart.register(annotationPlugin);
-import { addCustomBackground, annotations } from "./chart-constants";
+import { addCustomBackground, annotations, flightStyles, tooltipStyles } from "./chart-constants";
 
 @Component({
   selector: 'chart-display-component',
@@ -21,11 +21,20 @@ export class ChartDisplayComponent implements AfterViewInit {
   plugins = [addCustomBackground('#040624')]
 
   ngAfterViewInit(): void {
+    const dataset1 = {
+      ...flightStyles,
+      data: [{ x: 100, y: 200 }, { x: 200, y: 400 }, { x: 200, y: 500 }]
+    };
 
     this.chart = new Chart('flightChart', {
       type: 'scatter',
       plugins: this.plugins,
-      data: { datasets: [] },
+      data:
+      {
+        datasets: [
+          dataset1
+        ]
+      },
       options: this.setupChartOptions(),
     })
   }
@@ -49,6 +58,14 @@ export class ChartDisplayComponent implements AfterViewInit {
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          ...tooltipStyles,
+          callbacks: {
+            label: (tooltipItem) => {
+              return `Value:`;
+            }
+          }
         },
         annotation: {
           annotations: {
