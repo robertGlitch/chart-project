@@ -19,7 +19,20 @@ export const flightStyles = {
   borderColor: '#bbcff0',
   pointHoverBorderColor: '#bbcff0',
   borderWidth: 2,
-  pointHoverBorderWidth: 2
+  pointHoverBorderWidth: 2,
+
+}
+
+export const flightDatalabels = {
+  datalabels: {
+    color: '#FFCE56',
+    anchor: 'end',
+    align: 'end',
+    offset: -3,
+    formatter: function (value: any, _context: any) {
+      return value.flightName
+    }
+  }
 }
 
 export const tooltipStyles = {
@@ -32,9 +45,6 @@ const cityAnnotationStyle = {
   color: '#7064f5',
   borderRadius: 0,
   borderWidth: 0,
-  callout: {
-    display: true
-  },
   font: {
     size: 16
   }
@@ -48,16 +58,14 @@ const radarAnnotationStyle = {
 };
 
 
-
-
-
 export const annotations: any = {
   'city1': { ...cityAnnotationStyle, content: 'ZAG', xValue: 640, yValue: 350 },
   'city2': { ...cityAnnotationStyle, content: 'LIN', xValue: 100, yValue: 350 },
   'city3': { ...cityAnnotationStyle, content: 'BLQ', xValue: 400, yValue: 126 },
   'city4': { ...cityAnnotationStyle, content: 'LJU', xValue: 510, yValue: 400 },
-  'city5': { ...cityAnnotationStyle, content: 'VCE', xValue: 270, yValue: 450 },
+  'city5': { ...cityAnnotationStyle, content: 'VCE', xValue: 270, yValue: 410 },
   'city6': { ...cityAnnotationStyle, content: 'RJK', xValue: 500, yValue: 310 },
+  'radar0': { ...radarAnnotationStyle, radius: 0, xMin: 330, xMax: 370, yMin: 330, yMax: 370 },
   'radar1': { ...radarAnnotationStyle, radius: 0, xMin: 250, xMax: 450, yMin: 250, yMax: 450 },
   'radar2': { ...radarAnnotationStyle, radius: 0, xMin: 150, xMax: 550, yMin: 150, yMax: 550 },
   'radar3': { ...radarAnnotationStyle, radius: 0, xMin: 50, xMax: 650, yMin: 50, yMax: 650 },

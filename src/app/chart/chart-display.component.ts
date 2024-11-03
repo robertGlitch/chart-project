@@ -1,9 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from "@angular/core";
 import Chart, { ChartOptions } from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(annotationPlugin);
-import { addCustomBackground, annotations, flightStyles, tooltipStyles } from "./chart-constants";
+Chart.register(ChartDataLabels);
+import { addCustomBackground, annotations, flightDatalabels, flightStyles, tooltipStyles } from "./utils/chart-constants";
+import { Observable, Subject, from, takeUntil } from "rxjs";
+import { GraphPoint } from "./utils/graph-flight.points";
 
 @Component({
   selector: 'chart-display-component',
@@ -16,27 +20,54 @@ import { addCustomBackground, annotations, flightStyles, tooltipStyles } from ".
       </div>
   `
 })
-export class ChartDisplayComponent implements AfterViewInit {
+export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
+  @Input() flightData$!: Observable<GraphPoint[]>;
+
+  destroyed = new Subject();
+
+
   chart!: Chart;
   plugins = [addCustomBackground('#040624')]
+  flightDataset!: any;
 
   ngAfterViewInit(): void {
-    const dataset1 = {
-      ...flightStyles,
-      data: [{ x: 100, y: 200 }, { x: 200, y: 400 }, { x: 200, y: 500 }]
-    };
+    this.createFlightDataset();
+    this.createChart();
 
+    this.flightData$
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(flightData => {
+        this.updateFlightData(flightData);
+      })
+  }
+
+  private createFlightDataset() {
+    this.flightDataset = {
+      data: [],
+      order: 0,
+      ...flightStyles,
+      ...flightDatalabels
+    }
+  }
+
+  private createChart() {
     this.chart = new Chart('flightChart', {
       type: 'scatter',
       plugins: this.plugins,
       data:
       {
-        datasets: [
-          dataset1
-        ]
+        datasets: [this.flightDataset]
       },
       options: this.setupChartOptions(),
     })
+  }
+
+  private updateFlightData(data: GraphPoint[]) {
+    const index = this.chart?.data.datasets.findIndex(d => d.order === 0);
+    if (index > -1) {
+      this.chart.data.datasets[index].data = data;
+      this.chart.update();
+    }
   }
 
 
@@ -63,7 +94,11 @@ export class ChartDisplayComponent implements AfterViewInit {
           ...tooltipStyles,
           callbacks: {
             label: (tooltipItem) => {
-              return `Value:`;
+              const point = <GraphPoint>tooltipItem.dataset.data[tooltipItem.dataIndex];
+              return [
+                `Altitude: ${point?.flightAltitude!} m`,
+                `Speed: ${point?.flightSpeed} knots`
+              ];
             }
           }
         },
@@ -74,6 +109,11 @@ export class ChartDisplayComponent implements AfterViewInit {
         }
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed.next(null);
+    this.destroyed.complete();
   }
 }
 
