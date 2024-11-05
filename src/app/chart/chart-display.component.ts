@@ -8,6 +8,7 @@ Chart.register(ChartDataLabels);
 import { addCustomBackground, annotations, flightDatalabels, flightStyles, tooltipStyles } from "./utils/chart-constants";
 import { Observable, Subject, from, takeUntil } from "rxjs";
 import { GraphPoint } from "./utils/graph-flight.points";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'chart-display-component',
@@ -79,11 +80,11 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
       scales: {
         x: {
           min: 0,
-          max: 700,
+          max: 150,
         },
         y: {
           min: 0,
-          max: 700,
+          max: 150,
         }
       },
       plugins: {

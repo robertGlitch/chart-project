@@ -28,6 +28,7 @@ export const flightDatalabels = {
     color: '#FFCE56',
     anchor: 'end',
     align: 'end',
+    clip: true,
     offset: -3,
     formatter: function (value: any, _context: any) {
       return value.flightName
@@ -55,21 +56,22 @@ const radarAnnotationStyle = {
   borderColor: '#009900',
   backgroundColor: 'rgba(0, 0, 0, 0)',
   borderWidth: 1,
+  drawTime: 'beforeDatasetsDraw'
 };
 
 
 export const annotations: any = {
-  'city1': { ...cityAnnotationStyle, content: 'ZAG', xValue: 640, yValue: 350 },
-  'city2': { ...cityAnnotationStyle, content: 'LIN', xValue: 100, yValue: 350 },
-  'city3': { ...cityAnnotationStyle, content: 'BLQ', xValue: 400, yValue: 126 },
-  'city4': { ...cityAnnotationStyle, content: 'LJU', xValue: 510, yValue: 400 },
-  'city5': { ...cityAnnotationStyle, content: 'VCE', xValue: 270, yValue: 410 },
-  'city6': { ...cityAnnotationStyle, content: 'RJK', xValue: 500, yValue: 310 },
-  'radar0': { ...radarAnnotationStyle, radius: 0, xMin: 330, xMax: 370, yMin: 330, yMax: 370 },
-  'radar1': { ...radarAnnotationStyle, radius: 0, xMin: 250, xMax: 450, yMin: 250, yMax: 450 },
-  'radar2': { ...radarAnnotationStyle, radius: 0, xMin: 150, xMax: 550, yMin: 150, yMax: 550 },
-  'radar3': { ...radarAnnotationStyle, radius: 0, xMin: 50, xMax: 650, yMin: 50, yMax: 650 },
-  'radar4': { ...radarAnnotationStyle, radius: 0, xMin: -100, xMax: 750, yMin: -100, yMax: 750 },
+  'city1': { ...cityAnnotationStyle, content: 'ZAG', xValue: 75, yValue: 75 },
+  'city2': { ...cityAnnotationStyle, content: 'LJU', xValue: 20, yValue: 100 },
+  'city3': { ...cityAnnotationStyle, content: 'MBX', xValue: 45, yValue: 125 },
+  'city4': { ...cityAnnotationStyle, content: 'RJK', xValue: 15, yValue: 35 },
+  'city5': { ...cityAnnotationStyle, content: 'BNX', xValue: 135, yValue: 15 },
+
+  'radar0': { ...radarAnnotationStyle, radius: 0, xMin: 65, xMax: 85, yMin: 65, yMax: 85 },
+  'radar1': { ...radarAnnotationStyle, radius: 0, xMin: 45, xMax: 105, yMin: 45, yMax: 105 },
+  'radar2': { ...radarAnnotationStyle, radius: 0, xMin: 15, xMax: 135, yMin: 15, yMax: 135 },
+  'radar3': { ...radarAnnotationStyle, radius: 0, xMin: -15, xMax: 165, yMin: -15, yMax: 165 },
+  'radar4': { ...radarAnnotationStyle, radius: 0, xMin: -45, xMax: 195, yMin: -45, yMax: 195 },
 }
 
 
