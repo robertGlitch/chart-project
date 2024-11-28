@@ -38,6 +38,7 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
     this.flightData$
       .pipe(takeUntil(this.destroyed))
       .subscribe(flightData => {
+        console.log("Received:", flightData)
         this.updateFlightData(flightData);
       })
   }
