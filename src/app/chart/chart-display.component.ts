@@ -1,14 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, inject } from "@angular/core";
 import Chart, { ChartOptions } from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(annotationPlugin);
 Chart.register(ChartDataLabels);
-import { addCustomBackground, annotations, flightDatalabels, flightStyles, tooltipStyles } from "./utils/chart-constants";
-import { Observable, Subject, from, takeUntil } from "rxjs";
+import { addCustomBackground, annotations, flightDatalabels, flightStyles, samAnnotationStyle, samRadiusAnnotationStyle, tooltipStyles } from "./utils/chart-constants";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { GraphPoint } from "./utils/graph-flight.points";
-import { HttpClient } from "@angular/common/http";
+import { FlightService } from "./flight.service";
 
 @Component({
   selector: 'chart-display-component',
@@ -22,6 +22,8 @@ import { HttpClient } from "@angular/common/http";
   `
 })
 export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
+  private readonly flightService = inject(FlightService);
+
   @Input() flightData$!: Observable<GraphPoint[]>;
 
   destroyed = new Subject();
@@ -30,6 +32,7 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
   chart!: Chart;
   plugins = [addCustomBackground('#040624')]
   flightDataset!: any;
+  samActive: boolean = false;
 
   ngAfterViewInit(): void {
     this.createFlightDataset();
@@ -40,6 +43,14 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
       .subscribe(flightData => {
         console.log("Received:", flightData)
         this.updateFlightData(flightData);
+      })
+
+
+    this.flightService.samActivateSubject$.
+      pipe(takeUntil(this.destroyed))
+      .subscribe(samActivate => {
+        this.samActive = samActivate;
+        this.chart.update();
       })
   }
 
@@ -82,10 +93,16 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
         x: {
           min: 0,
           max: 150,
+          ticks: {
+            count: 7
+          }
         },
         y: {
           min: 0,
           max: 150,
+          ticks: {
+            count: 7
+          }
         }
       },
       plugins: {
@@ -99,14 +116,29 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
               const point = <GraphPoint>tooltipItem.dataset.data[tooltipItem.dataIndex];
               return [
                 `Altitude: ${point?.flightAltitude!} m`,
-                `Speed: ${point?.flightSpeed} knots`
+                `Speed: ${point?.flightSpeed} km/h`
               ];
             }
           }
         },
         annotation: {
           annotations: {
-            ...annotations
+            ...annotations,
+            airDef: {
+              display: () => Boolean(this.samActive),
+              xValue: 70,
+              yValue: 70,
+              ...samAnnotationStyle
+            },
+            airDefRadius: {
+              display: () => Boolean(this.samActive),
+              radius: 0,
+              xMin: 30,
+              xMax: 110,
+              yMin: 30,
+              yMax: 110,
+              ...samRadiusAnnotationStyle
+            }
           }
         }
       }

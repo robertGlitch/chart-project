@@ -25,7 +25,7 @@ export const flightStyles = {
 
 export const flightDatalabels = {
   datalabels: {
-    color: '#FFCE56',
+    color: '#bbcff0',
     anchor: 'end',
     align: 'end',
     clip: true,
@@ -59,6 +59,25 @@ const radarAnnotationStyle = {
   drawTime: 'beforeDatasetsDraw'
 };
 
+export const samAnnotationStyle = {
+  type: 'point',
+  pointStyle: 'cross',
+  borderColor: '#f7f752',
+  backgroundColor: 'transparent',
+  borderWidth: 3,
+  radius: 12,
+  drawTime: 'beforeDatasetsDraw'
+};
+
+export const samRadiusAnnotationStyle = {
+  type: 'point',
+  borderColor: '#f7f752',
+  backgroundColor: 'transparent',
+  borderWidth: 1,
+  borderDash: [6, 6],
+  drawTime: 'beforeDatasetsDraw'
+};
+
 
 export const annotations: any = {
   'city1': { ...cityAnnotationStyle, content: 'ZAG', xValue: 75, yValue: 75 },
@@ -73,6 +92,7 @@ export const annotations: any = {
   'radar3': { ...radarAnnotationStyle, radius: 0, xMin: -15, xMax: 165, yMin: -15, yMax: 165 },
   'radar4': { ...radarAnnotationStyle, radius: 0, xMin: -45, xMax: 195, yMin: -45, yMax: 195 },
 }
+
 
 
 

@@ -39,6 +39,11 @@ export class ChartDataComponent implements OnInit {
   toggleRadar(value: boolean) {
     this.flightService.startPauseRadar(value);
   }
+
+
+  armSAM(value: boolean) {
+    this.flightService.armSam(value);
+  }
 }
 
 
