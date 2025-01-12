@@ -44,6 +44,10 @@ export class ChartDataComponent implements OnInit {
   armSAM(value: boolean) {
     this.flightService.armSam(value);
   }
+
+  fireSAM(value: boolean) {
+    this.flightService.fireSam(value);
+  }
 }
 
 

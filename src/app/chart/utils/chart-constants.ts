@@ -12,7 +12,7 @@ export const addCustomBackground = (colorForFill: string) => ({
   }
 });
 
-export const flightStyles = {
+export const aircraftStyles = {
   pointStyle: 'rectRot',
   pointRadius: 6,
   pointHoverRadius: 6,
@@ -23,8 +23,9 @@ export const flightStyles = {
 
 }
 
-export const flightDatalabels = {
+export const aircraftDatalabels = {
   datalabels: {
+    display: true,
     color: '#bbcff0',
     anchor: 'end',
     align: 'end',
@@ -46,6 +47,7 @@ const cityAnnotationStyle = {
   color: '#7064f5',
   borderRadius: 0,
   borderWidth: 0,
+  drawTime: 'beforeDatasetsDraw',
   font: {
     size: 16
   }
@@ -59,7 +61,20 @@ const radarAnnotationStyle = {
   drawTime: 'beforeDatasetsDraw'
 };
 
+export const missleStyles = {
+  pointStyle: 'triangle',
+  pointRadius: 6,
+  pointHoverRadius: 6,
+  borderColor: '#f7f752',
+  pointHoverBorderColor: '#f7f752',
+  borderWidth: 2,
+  pointHoverBorderWidth: 2,
+
+}
+
 export const samAnnotationStyle = {
+  xValue: 70,
+  yValue: 70,
   type: 'point',
   pointStyle: 'cross',
   borderColor: '#f7f752',
@@ -70,6 +85,11 @@ export const samAnnotationStyle = {
 };
 
 export const samRadiusAnnotationStyle = {
+  radius: 0,
+  xMin: 30,
+  xMax: 110,
+  yMin: 30,
+  yMax: 110,
   type: 'point',
   borderColor: '#f7f752',
   backgroundColor: 'transparent',

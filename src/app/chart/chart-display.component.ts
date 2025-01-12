@@ -1,14 +1,17 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, inject } from "@angular/core";
-import Chart, { ChartOptions } from 'chart.js/auto';
+import Chart, { ChartData, ChartOptions } from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Observable, Subject, takeUntil } from "rxjs";
+import { FlightService } from "./flight.service";
+import { addCustomBackground, annotations, samAnnotationStyle, samRadiusAnnotationStyle, tooltipStyles } from "./utils/chart-constants";
+import { GraphPoint } from "./utils/graph-flight.points";
 
 Chart.register(annotationPlugin);
 Chart.register(ChartDataLabels);
-import { addCustomBackground, annotations, flightDatalabels, flightStyles, samAnnotationStyle, samRadiusAnnotationStyle, tooltipStyles } from "./utils/chart-constants";
-import { Observable, Subject, takeUntil } from "rxjs";
-import { GraphPoint } from "./utils/graph-flight.points";
-import { FlightService } from "./flight.service";
+Chart.defaults.set('plugins.datalabels', {
+  display: false
+});
 
 @Component({
   selector: 'chart-display-component',
@@ -31,46 +34,43 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
 
   chart!: Chart;
   plugins = [addCustomBackground('#040624')]
+  initialData!: ChartData;
   flightDataset!: any;
   samActive: boolean = false;
+  samFired: boolean = false;
+  misslePoint: GraphPoint | null = null;
 
   ngAfterViewInit(): void {
-    this.createFlightDataset();
+    this.initialData = this.flightService.createChartDatasets();
     this.createChart();
 
     this.flightData$
       .pipe(takeUntil(this.destroyed))
       .subscribe(flightData => {
-        console.log("Received:", flightData)
+        // console.log("Received:", flightData)
         this.updateFlightData(flightData);
       })
 
 
-    this.flightService.samActivateSubject$.
+    this.flightService.samActivate$.
       pipe(takeUntil(this.destroyed))
       .subscribe(samActivate => {
         this.samActive = samActivate;
         this.chart.update();
       })
-  }
 
-  private createFlightDataset() {
-    this.flightDataset = {
-      data: [],
-      order: 0,
-      ...flightStyles,
-      ...flightDatalabels
-    }
+    this.flightService.samFire$.
+      pipe(takeUntil(this.destroyed))
+      .subscribe(samFire => {
+        this.samFired = samFire
+      })
   }
 
   private createChart() {
     this.chart = new Chart('flightChart', {
       type: 'scatter',
       plugins: this.plugins,
-      data:
-      {
-        datasets: [this.flightDataset]
-      },
+      data: this.initialData,
       options: this.setupChartOptions(),
     })
   }
@@ -78,6 +78,10 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
   private updateFlightData(data: GraphPoint[]) {
     const index = this.chart?.data.datasets.findIndex(d => d.order === 0);
     if (index > -1) {
+      // if (this.samFired) {
+      //   this.calculateMissleTrajectory(data.find(d => d.id === 4)!);
+      //   this.chart.data.datasets[1].data = [this.misslePoint!];
+      // }
       this.chart.data.datasets[index].data = data;
       this.chart.update();
     }
@@ -86,6 +90,7 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
 
   private setupChartOptions() {
     return <ChartOptions>{
+      animation: false,
       responsive: true,
       maintainAspectRatio: false,
       aspectRatio: 1,
@@ -126,23 +131,26 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
             ...annotations,
             airDef: {
               display: () => Boolean(this.samActive),
-              xValue: 70,
-              yValue: 70,
               ...samAnnotationStyle
             },
             airDefRadius: {
               display: () => Boolean(this.samActive),
-              radius: 0,
-              xMin: 30,
-              xMax: 110,
-              yMin: 30,
-              yMax: 110,
               ...samRadiusAnnotationStyle
             }
           }
         }
       }
     }
+  }
+
+
+  calculateMissleTrajectory(targetPoint: GraphPoint) {
+    if (!this.misslePoint) {
+      const annotations: any = this.chart.config.options?.plugins?.annotation?.annotations;
+      const airDefAnnotation = annotations['airDef'];
+      this.misslePoint = new GraphPoint(airDefAnnotation.xValue, airDefAnnotation.yValue)
+    }
+    this.misslePoint = this.flightService.interpolateNextPoint(this.misslePoint, targetPoint)
   }
 
   ngOnDestroy(): void {
