@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { GraphPoint } from "./utils/graph-flight.points";
 import { BehaviorSubject, Subject, from, switchMap } from "rxjs";
-import { ChartData, ChartDataset } from "chart.js";
+import { ChartData } from "chart.js";
 import { aircraftDatalabels, aircraftStyles, missleStyles } from "./utils/chart-constants";
 
 @Injectable({
@@ -11,9 +11,13 @@ import { aircraftDatalabels, aircraftStyles, missleStyles } from "./utils/chart-
 export class FlightService {
   private readonly http = inject(HttpClient);
   private readonly flightURL = 'api/combined.json'
+  private readonly additionalflightURL = 'api/unknown.json'
 
   private readonly startPauseRadarSubject = new BehaviorSubject<boolean>(false);
   startPauseRadar$ = this.startPauseRadarSubject.asObservable();
+
+  private readonly startPauseEmparRadarSubject = new BehaviorSubject<boolean>(false);
+  startPauseEmparRadar$ = this.startPauseEmparRadarSubject.asObservable();
 
   private readonly samActivateSubject = new Subject<boolean>();
   samActivate$ = this.samActivateSubject.asObservable();
@@ -21,15 +25,27 @@ export class FlightService {
   private readonly samFireSubject = new Subject<boolean>();
   samFire$ = this.samFireSubject.asObservable();
 
-  startSimulation() {
+  getFlightData() {
     return this.http.get<[GraphPoint[]]>(this.flightURL)
       .pipe(switchMap(flightData =>
         from(flightData)
       ))
   }
 
+  getAdditionalFlightData() {
+    return this.http.get<GraphPoint[]>(this.additionalflightURL)
+      .pipe(switchMap(flightData =>
+        from(flightData)
+      ))
+  }
+
+
   startPauseRadar(value: boolean) {
     this.startPauseRadarSubject.next(value);
+  }
+
+  startPauseEmparRadar(value: boolean) {
+    this.startPauseEmparRadarSubject.next(value);
   }
 
 

@@ -12,12 +12,19 @@ export const addCustomBackground = (colorForFill: string) => ({
   }
 });
 
+
 export const aircraftStyles = {
-  pointStyle: 'rectRot',
+  pointStyle: (ctx: any) => {
+    return ctx.raw?.id ? 'rectRot' : 'triangle'
+  },
   pointRadius: 6,
   pointHoverRadius: 6,
-  borderColor: '#bbcff0',
-  pointHoverBorderColor: '#bbcff0',
+  borderColor: (ctx: any) => {
+    return ctx.raw?.id ? '#bbcff0' : '#cc0202'
+  },
+  pointHoverBorderColor: (ctx: any) => {
+    return ctx.raw?.id ? '#bbcff0' : '#cc0202'
+  },
   borderWidth: 2,
   pointHoverBorderWidth: 2,
 
@@ -26,7 +33,10 @@ export const aircraftStyles = {
 export const aircraftDatalabels = {
   datalabels: {
     display: true,
-    color: '#bbcff0',
+    color: (ctx: any) => {
+      const point = ctx.dataset.data[ctx.dataIndex];
+      return point?.id ? '#bbcff0' : '#cc0202'
+    },
     anchor: 'end',
     align: 'end',
     clip: true,

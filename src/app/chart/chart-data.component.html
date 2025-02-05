@@ -17,22 +17,33 @@
         </div>
       </div>
       <div class="col-6">
+        <div>EMPAR radar</div>
+        <div>
+          <p-toggleButton
+            onLabel="On"
+            offLabel="Off"
+            (onChange)="toggleEMPAR($event.checked!)"
+          />
+        </div>
+      </div>
+      <div class="col-6">
         <div>Arm SAM</div>
         <div>
           <p-toggleButton
+            #armSamValue
             onLabel="On"
             offLabel="Off"
             (onChange)="armSAM($event.checked!)"
           />
         </div>
       </div>
-      <div class="col-6">
+      <div *ngIf="armSamValue.checked" class="col-6">
         <div>Fire SAM</div>
         <div>
-          <p-toggleButton
-            onLabel="On"
-            offLabel="Off"
-            (onChange)="fireSAM($event.checked!)"
+          <p-button
+            label="HASTA LA VISTA"
+            (onChange)="fireSAM()"
+            severity="danger"
           />
         </div>
       </div>
