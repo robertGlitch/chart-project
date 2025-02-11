@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import { ChartDisplayComponent } from "./chart-display.component";
-import { ReplaySubject, concatMap, map, switchMap, timer, filter, take, from, toArray, Observable, combineLatest, startWith } from "rxjs";
+import { ReplaySubject, concatMap, map, switchMap, timer, filter, take, from, toArray, Observable, combineLatest, startWith, takeUntil, finalize, of, endWith } from "rxjs";
 import { GraphPoint } from "./utils/graph-flight.points";
 import { FlightService } from "./flight.service";
 import { HttpClientModule } from "@angular/common/http";
@@ -30,6 +30,7 @@ export class ChartDataComponent implements OnInit {
   flightData$ = this.flightDataSubject.asObservable();
   startPauseRadar$ = this.flightService.startPauseRadar$;
   startPauseEmparRadar$ = this.flightService.startPauseEmparRadar$;
+  targetActive$ = this.flightService.targetActive$;
 
   airTraffic$ = this.flightService.getFlightData()
     .pipe(concatMap(resposne =>
@@ -51,7 +52,7 @@ export class ChartDataComponent implements OnInit {
             take(1),
             map(() => resposne)
           )))
-    ))
+    ), takeUntil(this.targetActive$), endWith(null))
 
   ngOnInit(): void {
 
@@ -60,7 +61,6 @@ export class ChartDataComponent implements OnInit {
       this.unkownAirTraffic$.pipe(startWith(null))
     ])
       .subscribe(([airTraffic, unkownTraffic]) => {
-
         let data: GraphPoint[] = [];
         if (airTraffic && unkownTraffic) {
           data = [...airTraffic, unkownTraffic];

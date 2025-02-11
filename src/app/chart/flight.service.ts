@@ -25,6 +25,9 @@ export class FlightService {
   private readonly samFireSubject = new Subject<boolean>();
   samFire$ = this.samFireSubject.asObservable();
 
+  private readonly targetActiveSubject = new Subject<boolean>();
+  targetActive$ = this.targetActiveSubject.asObservable();
+
   getFlightData() {
     return this.http.get<[GraphPoint[]]>(this.flightURL)
       .pipe(switchMap(flightData =>
@@ -57,6 +60,12 @@ export class FlightService {
     this.samFireSubject.next(value);
   }
 
+  markeTargetHit(value: boolean) {
+    this.targetActiveSubject.next(value);
+  }
+
+
+
   createChartDatasets(): ChartData {
     return <ChartData>{
       datasets: [
@@ -75,6 +84,7 @@ export class FlightService {
     }
   }
 
+
   interpolateNextPoint(start: GraphPoint, end: GraphPoint, factor: number = 0.7): GraphPoint {
     let nextPoint = new GraphPoint(0, 0);
 
@@ -84,11 +94,14 @@ export class FlightService {
     }
 
     else {
-      const slope = (end.y - start.y) / (end.x - start.x);
-      nextPoint.x = start.x + factor;
-      nextPoint.y = start.y + slope * (nextPoint.x - start.x);
-    }
+      const xDirection = start.x > end.x ? -1 : 1;
+      nextPoint.x = start.x + (xDirection * factor);
 
+      const slope = (end.y - start.y) / (end.x - start.x);
+      nextPoint.y = start.y + (xDirection * (slope * factor));
+
+    }
     return nextPoint;
+
   }
 }

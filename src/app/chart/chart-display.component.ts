@@ -47,7 +47,6 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
     this.flightData$
       .pipe(takeUntil(this.destroyed))
       .subscribe(flightData => {
-        // console.log("Received:", flightData)
         this.updateFlightData(flightData);
       })
 
@@ -78,10 +77,19 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
   private updateFlightData(data: GraphPoint[]) {
     const index = this.chart?.data.datasets.findIndex(d => d.order === 0);
     if (index > -1) {
-      // if (this.samFired) {
-      //   this.calculateMissleTrajectory(data.find(d => d.id === 4)!);
-      //   this.chart.data.datasets[1].data = [this.misslePoint!];
-      // }
+      if (this.samFired) {
+        const targetPoint = data.find(d => d.id === null)!;
+        this.misslePoint = this.calculateMissleTrajectory(targetPoint);
+
+        if (Math.round(this.misslePoint.x) === Math.round(targetPoint.x)) {
+          this.chart.data.datasets[1].data = [];
+          this.flightService.fireSam(false);
+          this.flightService.markeTargetHit(false);
+        }
+        else {
+          this.chart.data.datasets[1].data = [this.misslePoint];
+        }
+      }
       this.chart.data.datasets[index].data = data;
       this.chart.update();
     }
@@ -150,7 +158,7 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
       const airDefAnnotation = annotations['airDef'];
       this.misslePoint = new GraphPoint(airDefAnnotation.xValue, airDefAnnotation.yValue)
     }
-    this.misslePoint = this.flightService.interpolateNextPoint(this.misslePoint, targetPoint)
+    return this.flightService.interpolateNextPoint(this.misslePoint, targetPoint)
   }
 
   ngOnDestroy(): void {
