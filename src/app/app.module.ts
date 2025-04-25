@@ -4,7 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChartDataComponent } from './chart/chart-data.component';
-import { HttpClient } from '@angular/common/http';
+import { ChartSimpleDisplayComponent } from './chart-simple/chart-simple-display.component';
+import { TabViewModule } from 'primeng/tabview';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,9 @@ import { HttpClient } from '@angular/common/http';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ChartDataComponent
+    TabViewModule,
+    ChartDataComponent,
+    ChartSimpleDisplayComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,13 +1,21 @@
 import { Component } from '@angular/core';
-import { ChartDataComponent } from './chart/chart-data.component';
 
 @Component({
   selector: 'app-root',
   styleUrls: ['./app.component.scss'],
   template: `
-  <div class="content" role="main">
+  <p-tabView>
+    <p-tabPanel header="Chart simple">
+    <div class="tab-panel">
+    <chart-simple-display-component></chart-simple-display-component>
+    </div>
+  </p-tabPanel>
+    <p-tabPanel header="Chart detail">
+  <div class="content tab-panel" role="main">
   <chart-data-component></chart-data-component>
-</div>
+   </div>
+    </p-tabPanel>
+  </p-tabView>
 
 <router-outlet></router-outlet>
   `
