@@ -4,7 +4,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Observable, Subject, takeUntil } from "rxjs";
 import { FlightService } from "./flight.service";
-import { addCustomBackground, annotations, samAnnotationStyle, samRadiusAnnotationStyle, tooltipStyles } from "./utils/chart-constants";
+import { addCustomBackground, annotations, samAnnotationStyle, samRadiusAnnotationStyle, scalesConfig, tooltipStyles } from "./utils/chart-constants";
 import { GraphPoint } from "./utils/graph-flight.points";
 
 Chart.register(annotationPlugin);
@@ -28,12 +28,10 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
   private readonly flightService = inject(FlightService);
 
   @Input() flightData$!: Observable<GraphPoint[]>;
-
   destroyed = new Subject();
 
 
   chart!: Chart;
-  plugins = [addCustomBackground('#040624')]
   initialData!: ChartData;
   flightDataset!: any;
   samActive: boolean = false;
@@ -68,33 +66,11 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
   private createChart() {
     this.chart = new Chart('flightChart', {
       type: 'scatter',
-      plugins: this.plugins,
       data: this.initialData,
       options: this.setupChartOptions(),
+      plugins: [addCustomBackground('#040624')]
     })
   }
-
-  private updateFlightData(data: GraphPoint[]) {
-    const index = this.chart?.data.datasets.findIndex(d => d.order === 0);
-    if (index > -1) {
-      if (this.samFired) {
-        const targetPoint = data.find(d => d.id === null)!;
-        this.misslePoint = this.calculateMissleTrajectory(targetPoint);
-
-        if (Math.round(this.misslePoint.x) === Math.round(targetPoint.x)) {
-          this.chart.data.datasets[1].data = [];
-          this.flightService.fireSam(false);
-          this.flightService.markeTargetHit(false);
-        }
-        else {
-          this.chart.data.datasets[1].data = [this.misslePoint];
-        }
-      }
-      this.chart.data.datasets[index].data = data;
-      this.chart.update();
-    }
-  }
-
 
   private setupChartOptions() {
     return <ChartOptions>{
@@ -103,20 +79,7 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
       maintainAspectRatio: false,
       aspectRatio: 1,
       scales: {
-        x: {
-          min: 0,
-          max: 150,
-          ticks: {
-            count: 7
-          }
-        },
-        y: {
-          min: 0,
-          max: 150,
-          ticks: {
-            count: 7
-          }
-        }
+        ...scalesConfig
       },
       plugins: {
         legend: {
@@ -124,6 +87,9 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
         },
         tooltip: {
           ...tooltipStyles,
+          filter: (tooltipItem) => {
+            return tooltipItem.dataset.order === 0;
+          },
           callbacks: {
             label: (tooltipItem) => {
               const point = <GraphPoint>tooltipItem.dataset.data[tooltipItem.dataIndex];
@@ -148,6 +114,27 @@ export class ChartDisplayComponent implements AfterViewInit, OnDestroy {
           }
         }
       }
+    }
+  }
+
+  private updateFlightData(data: GraphPoint[]) {
+    const index = this.chart?.data.datasets.findIndex(d => d.order === 0);
+    if (index > -1) {
+      if (this.samFired) {
+        const targetPoint = data.find(d => d.id === null)!;
+        this.misslePoint = this.calculateMissleTrajectory(targetPoint);
+
+        if (Math.round(this.misslePoint.x) === Math.round(targetPoint.x)) {
+          this.chart.data.datasets[1].data = [];
+          this.flightService.fireSam(false);
+          this.flightService.markeTargetHit(false);
+        }
+        else {
+          this.chart.data.datasets[1].data = [this.misslePoint];
+        }
+      }
+      this.chart.data.datasets[index].data = data;
+      this.chart.update();
     }
   }
 

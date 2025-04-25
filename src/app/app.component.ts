@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   styleUrls: ['./app.component.scss'],
   template: `
-  <p-tabView>
+  <p-tabView [activeIndex]="1">
     <p-tabPanel header="Chart simple">
     <div class="tab-panel">
     <chart-simple-display-component></chart-simple-display-component>

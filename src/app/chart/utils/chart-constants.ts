@@ -13,20 +13,57 @@ export const addCustomBackground = (colorForFill: string) => ({
 });
 
 
+export const scalesConfig = {
+  x: {
+    min: 0,
+    max: 150,
+    ticks: {
+      count: 7,
+      align: 'inner',
+      font: {
+        weight: 'bold',
+        size: 16
+      }
+
+    }
+  },
+  y: {
+    min: 0,
+    max: 150,
+    ticks: {
+      count: 7,
+      font: {
+        weight: 'bold',
+        size: 16
+      }
+    }
+  }
+}
+
+export const tooltipStyles = {
+  displayColors: false,
+  backgroundColor: '#f5e642',
+  bodyColor: '#000000',
+  bodyFont: {
+    size: 20
+  }
+}
+
+
 export const aircraftStyles = {
   pointStyle: (ctx: any) => {
     return ctx.raw?.id ? 'rectRot' : 'triangle'
   },
-  pointRadius: 6,
-  pointHoverRadius: 6,
+  pointRadius: 10,
+  pointHoverRadius: 10,
   borderColor: (ctx: any) => {
     return ctx.raw?.id ? '#bbcff0' : '#cc0202'
   },
   pointHoverBorderColor: (ctx: any) => {
     return ctx.raw?.id ? '#bbcff0' : '#cc0202'
   },
-  borderWidth: 2,
-  pointHoverBorderWidth: 2,
+  borderWidth: 3,
+  pointHoverBorderWidth: 3,
 
 }
 
@@ -47,8 +84,14 @@ export const aircraftDatalabels = {
   }
 }
 
-export const tooltipStyles = {
-  displayColors: false,
+export const missleStyles = {
+  pointStyle: 'star',
+  pointRadius: 8,
+  pointHoverRadius: 8,
+  borderColor: '#f7f752',
+  pointHoverBorderColor: '#f7f752',
+  borderWidth: 3,
+  pointHoverBorderWidth: 3,
 }
 
 
@@ -59,7 +102,8 @@ const cityAnnotationStyle = {
   borderWidth: 0,
   drawTime: 'beforeDatasetsDraw',
   font: {
-    size: 16
+    size: 20,
+    weight: 'bold'
   }
 };
 
@@ -71,17 +115,6 @@ const radarAnnotationStyle = {
   drawTime: 'beforeDatasetsDraw'
 };
 
-export const missleStyles = {
-  pointStyle: 'triangle',
-  pointRadius: 6,
-  pointHoverRadius: 6,
-  borderColor: '#f7f752',
-  pointHoverBorderColor: '#f7f752',
-  borderWidth: 2,
-  pointHoverBorderWidth: 2,
-
-}
-
 export const samAnnotationStyle = {
   xValue: 70,
   yValue: 70,
@@ -90,23 +123,24 @@ export const samAnnotationStyle = {
   borderColor: '#f7f752',
   backgroundColor: 'transparent',
   borderWidth: 3,
-  radius: 12,
+  radius: 15,
   drawTime: 'beforeDatasetsDraw'
 };
 
 export const samRadiusAnnotationStyle = {
   radius: 0,
-  xMin: 30,
-  xMax: 110,
-  yMin: 30,
-  yMax: 110,
+  xMin: 20,
+  xMax: 120,
+  yMin: 20,
+  yMax: 120,
   type: 'point',
   borderColor: '#f7f752',
   backgroundColor: 'transparent',
-  borderWidth: 1,
+  borderWidth: 2,
   borderDash: [6, 6],
   drawTime: 'beforeDatasetsDraw'
 };
+
 
 
 export const annotations: any = {
